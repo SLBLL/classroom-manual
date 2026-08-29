@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新人先生のための教室ノート</title>
+<style>
+:root{
+  --bg:#f7f4ee;--paper:#fffdf9;--text:#343330;--muted:#77736c;
+  --line:#e7e0d5;--accent:#d9775f;--accent2:#6f8f82;--soft:#f2e7dc;
+  --shadow:0 10px 30px rgba(60,50,40,.08);--radius:18px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif;line-height:1.8}
+button,input,textarea{font:inherit}
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:270px;background:#fffaf4;border-right:1px solid var(--line);padding:28px 18px;overflow:auto;z-index:20}
+.brand{padding:4px 10px 24px}.brand small{color:var(--accent);font-weight:700;letter-spacing:.08em}.brand h1{font-size:22px;line-height:1.4;margin:8px 0}.brand p{font-size:12px;color:var(--muted);margin:0}
+.nav-title{font-size:11px;color:#9a958c;font-weight:700;letter-spacing:.12em;padding:15px 10px 6px}
+.nav a{display:flex;gap:9px;align-items:center;text-decoration:none;color:#5b5750;padding:9px 10px;border-radius:10px;font-size:14px}
+.nav a:hover,.nav a.active{background:var(--soft);color:var(--accent);font-weight:700}
+.main{margin-left:270px;width:calc(100% - 270px);padding:38px 42px 70px;max-width:1250px}
+.hero{background:var(--paper);border:1px solid var(--line);border-radius:28px;padding:44px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"✦";position:absolute;right:45px;top:25px;font-size:90px;color:#ead6c7;transform:rotate(12deg)}
+.kicker{color:var(--accent);font-size:13px;font-weight:800;letter-spacing:.12em}
+.hero h2{font-family:Georgia,"Times New Roman",serif;font-size:40px;line-height:1.25;margin:10px 0 14px;max-width:720px}
+.hero p{max-width:720px;color:var(--muted)}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn{border:0;border-radius:999px;padding:10px 18px;cursor:pointer;background:var(--accent);color:#fff;font-weight:700}
+.btn.secondary{background:#fff;border:1px solid var(--line);color:var(--text)}
+.search{margin:22px 0;position:relative}.search input{width:100%;padding:15px 18px 15px 44px;border:1px solid var(--line);border-radius:14px;background:#fff;outline:none}.search span{position:absolute;left:16px;top:10px;font-size:20px}
+.section{padding-top:54px}.section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:18px}.section-head h3{font-size:25px;margin:0}.section-head p{margin:0;color:var(--muted);font-size:13px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:0 5px 18px rgba(60,50,40,.04);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card h4{margin:0 0 12px;font-size:18px}.card ul{padding-left:22px;margin:8px 0}.card li{margin:5px 0}
+.checklist label{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);cursor:pointer}.checklist label:last-child{border-bottom:0}.checklist input{width:18px;height:18px;accent-color:var(--accent)}
+.quote{border-left:4px solid var(--accent);padding:10px 15px;background:#fbf0e8;border-radius:0 10px 10px 0;margin:12px 0}.quote.green{border-left-color:var(--accent2);background:#edf4f0}
+.step{display:flex;gap:16px;align-items:flex-start}.num{min-width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800}
+.tag{display:inline-block;background:#eee8df;color:#716b62;padding:3px 9px;border-radius:999px;font-size:11px;margin:3px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.flow .box{background:#fff;border:1px solid var(--line);padding:8px 13px;border-radius:10px}.arrow{color:var(--accent)}
+.notice{padding:15px 17px;border-radius:12px;background:#fff6e8;border:1px solid #eedfc6;margin:12px 0}.danger{background:#fff0ed;border-color:#efd1c9}.good{background:#eef6f1;border-color:#d6e7dd}
+.memo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;outline:none}.field textarea{min-height:105px;resize:vertical}
+.location-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.location-item{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 13px}.location-item span{color:var(--muted);font-size:13px}
+.footer{text-align:center;color:#999;font-size:12px;padding:45px 0 0}
+.hidden{display:none!important}
+.mobile-top{display:none}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;width:100%;padding:72px 18px 45px}.mobile-top{display:flex;position:fixed;top:0;left:0;right:0;height:58px;background:#fffaf4;border-bottom:1px solid var(--line);z-index:15;align-items:center;padding:0 15px;gap:12px}.menu{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 10px}.mobile-title{font-weight:800}.hero{padding:30px 24px}.hero h2{font-size:31px}.grid,.grid.three,.memo-grid,.location-grid{grid-template-columns:1fr}
+}
+@media print{
+  .sidebar,.mobile-top,.hero-actions,.search{display:none!important}.main{margin:0;width:100%;padding:0}.hero,.card{box-shadow:none;break-inside:avoid}.section{padding-top:25px}
+}
+</style>
+</head>
+<body>
+<div class="mobile-top"><button class="menu" onclick="toggleMenu()">☰</button><span class="mobile-title">新人先生のための教室ノート</span></div>
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><small>ART CLASSROOM</small><h1>新人先生のための<br>教室ノート</h1><p>困ったときは、まず確認してください。</p></div>
+  <nav class="nav">
+    <div class="nav-title">BASIC</div>
+    <a href="#first">① まず最初に</a><a href="#attendance">② 出勤・退勤</a><a href="#places">③ 教室の場所</a>
+    <div class="nav-title">LESSON</div>
+    <a href="#prepare">④ 授業前の準備</a><a href="#flow">⑤ 授業の流れ</a><a href="#voice">⑥ 生徒への声かけ</a>
+    <a href="#works">⑦ 作品の管理</a><a href="#photos">⑧ 作品写真</a>
+    <div class="nav-title">COMMUNICATION</div>
+    <a href="#students">⑨ 生徒引き継ぎ</a><a href="#parents">⑩ 保護者対応</a>
+    <div class="nav-title">SAFETY & SUPPORT</div>
+    <a href="#trouble">⑪ よくあるトラブル</a><a href="#safety">⑫ ケガ・安全</a><a href="#cleanup">⑬ 掃除・片付け</a>
+    <div class="nav-title">QUICK GUIDE</div>
+    <a href="#where">⑭ これはどこ？</a><a href="#help">⑮ 困ったときは？</a><a href="#memo">⑯ 引き継ぎメモ</a><a href="#tips">⑰ 教室の知恵袋</a>
+  </nav>
+</aside>
+
+<main class="main">
+<section class="hero" id="home">
+  <div class="kicker">NEW TEACHER GUIDE</div>
+  <h2>新人先生のための<br>教室ノート</h2>
+  <p>教室での基本的な仕事、授業準備、作品管理、生徒・保護者対応、トラブル対応などをまとめています。分からないことがあったら、まずこのページを確認してください。</p>
+  <div class="hero-actions">
+    <button class="btn" onclick="window.print()">🖨️ 印刷する</button>
+    <button class="btn secondary" onclick="document.querySelector('#memo').scrollIntoView()">📝 引き継ぎメモを書く</button>
+  </div>
+</section>
+
+<div class="search"><span>⌕</span><input id="search" placeholder="ページ内を検索：例「絵の具」「作品」「保護者」"></div>
+
+<section class="section" id="first">
+<div class="section-head"><div><h3>① まず最初に</h3><p>出勤したら、まずここを確認。</p></div></div>
+<div class="card"><div class="checklist">
+<label><input type="checkbox">出勤の打刻をする</label><label><input type="checkbox">今日の授業内容を確認する</label><label><input type="checkbox">生徒の人数・名前を確認する</label><label><input type="checkbox">必要な材料を準備する</label><label><input type="checkbox">教室内を簡単に確認する</label><label><input type="checkbox">授業開始までに準備を終わらせる</label>
+</div><div class="quote">「すみません、こちらはどうすればいいですか？」と聞いて大丈夫です。分からないことを自己判断しないようにしましょう。</div></div>
+</section>
+
+<section class="section" id="attendance">
+<div class="section-head"><div><h3>② 出勤・退勤</h3><p>次の先生がすぐ使える状態まで。</p></div></div>
+<div class="grid">
+<div class="card"><h4>出勤したら</h4><ul><li>出勤の打刻をする</li><li>荷物を決められた場所に置く</li><li>今日の授業を確認する</li><li>必要な準備を始める</li></ul></div>
+<div class="card"><h4>退勤する前に</h4><div class="checklist"><label><input type="checkbox">作品を確認した</label><label><input type="checkbox">道具を片付けた</label><label><input type="checkbox">机・床をきれいにした</label><label><input type="checkbox">材料を元の場所に戻した</label><label><input type="checkbox">電気・エアコン等を確認した</label><label><input type="checkbox">退勤の打刻をした</label></div></div>
+</div>
+<div class="notice"><strong>★ ポイント</strong><br>「授業が終わった＝仕事が終わり」ではありません。次の先生がすぐに授業を始められる状態まで教室を戻しましょう。</div>
+</section>
+
+<section class="section" id="places">
+<div class="section-head"><div><h3>③ 教室の場所</h3><p>実際の棚・場所の写真をここに追加できます。</p></div></div>
+<div class="card"><div class="location-grid">
+<div class="location-item">画用紙 <span>→ 棚：＿＿＿＿</span></div><div class="location-item">絵の具 <span>→ 棚：＿＿＿＿</span></div>
+<div class="location-item">筆 <span>→ 棚：＿＿＿＿</span></div><div class="location-item">パレット <span>→ 棚：＿＿＿＿</span></div>
+<div class="location-item">粘土 <span>→ 棚：＿＿＿＿</span></div><div class="location-item">はさみ <span>→ 棚：＿＿＿＿</span></div>
+<div class="location-item">のり <span>→ 棚：＿＿＿＿</span></div><div class="location-item">雑巾 <span>→ 棚：＿＿＿＿</span></div>
+<div class="location-item">完成作品 <span>→ 場所：＿＿＿＿</span></div><div class="location-item">未完成作品 <span>→ 場所：＿＿＿＿</span></div>
+</div><div class="notice">📷 <strong>おすすめ：</strong>「画用紙はこの棚です」のように、実際の写真＋矢印を貼ると新人にも分かりやすくなります。</div></div>
+</section>
+
+<section class="section" id="prepare">
+<div class="section-head"><div><h3>④ 授業前の準備</h3><p>生徒が来る前に、できるだけ準備を終わらせる。</p></div></div>
+<div class="grid">
+<div class="card"><h4>今日の授業を確認</h4><ul><li>授業のテーマ</li><li>制作内容</li><li>生徒の人数</li><li>授業時間</li></ul></div>
+<div class="card"><h4>基本の材料</h4><ul><li>画用紙</li><li>鉛筆・消しゴム</li><li>絵の具・筆</li><li>水入れ・パレット</li><li>雑巾</li></ul></div>
+</div>
+<div class="card"><h4>教室の準備</h4><div class="checklist"><label><input type="checkbox">机・椅子を準備する</label><label><input type="checkbox">材料を準備する</label><label><input type="checkbox">見本作品を準備する</label><label><input type="checkbox">必要な道具を確認する</label></div></div>
+</section>
+
+<section class="section" id="flow">
+<div class="section-head"><div><h3>⑤ 授業の基本的な流れ</h3><p>一回の授業を5ステップで。</p></div></div>
+<div class="card">
+<div class="step"><div class="num">1</div><div><h4>生徒が来たら</h4><p>「こんにちは！」　「今日は〇〇を作るよ。」　「準備できたかな？」</p></div></div>
+<hr style="border:0;border-top:1px dashed var(--line)">
+<div class="step"><div class="num">2</div><div><h4>授業の説明</h4><p>今日何を作るのか、見本、制作の流れ、注意点を説明する。</p></div></div>
+<hr style="border:0;border-top:1px dashed var(--line)">
+<div class="step"><div class="num">3</div><div><h4>制作中</h4><p>生徒の様子を見ながら、必要なときに声をかける。生徒自身が考えて作れるようにサポートする。</p></div></div>
+<hr style="border:0;border-top:1px dashed var(--line)">
+<div class="step"><div class="num">4</div><div><h4>終了前</h4><p>「そろそろ片付けよう。」　「忘れ物はないかな？」　「作品をここに置いてください。」</p></div></div>
+<hr style="border:0;border-top:1px dashed var(--line)">
+<div class="step"><div class="num">5</div><div><h4>授業終了後</h4><p>作品確認 → 名前確認 → 写真 → コメント → 片付け → 掃除</p></div></div>
+</div>
+</section>
+
+<section class="section" id="voice">
+<div class="section-head"><div><h3>⑥ 生徒への声かけ</h3><p>「教える」より「引き出す」を意識。</p></div></div>
+<div class="grid three">
+<div class="card"><h4>はじめるとき</h4><div class="quote">「今日は何を作ろうか？」<br>「どんな色にしたい？」<br>「まず何からやってみようか？」</div></div>
+<div class="card"><h4>困っているとき</h4><div class="quote green">「どうした？」<br>「どこが難しい？」<br>「一緒に考えてみようか。」</div></div>
+<div class="card"><h4>ほめるとき</h4><div class="quote">「いいね！」<br>「面白い形になったね。」<br>「〇〇さんらしくていいね。」</div></div>
+</div>
+<div class="notice"><strong>× 先生がすぐに完成させる</strong><br>○ 「ここはどうしたい？」「どうやったらできそう？」と、生徒自身が考えられるように声をかける。</div>
+</section>
+
+<section class="section" id="works">
+<div class="section-head"><div><h3>⑦ 作品の管理</h3><p>作品は生徒にとって大切なもの。</p></div></div>
+<div class="card"><div class="checklist"><label><input type="checkbox">生徒の名前を確認した</label><label><input type="checkbox">日付を確認した</label><label><input type="checkbox">作品の状態を確認した</label><label><input type="checkbox">写真を撮った</label><label><input type="checkbox">決められた場所に置いた</label></div>
+<div class="notice danger"><strong>⚠️ 注意</strong><br>完成・未完成に関係なく、作品を「もういらないかな」と自己判断して捨てないでください。</div></div>
+</section>
+
+<section class="section" id="photos">
+<div class="section-head"><div><h3>⑧ 作品写真の撮り方</h3><p>撮影したら、保存まで確認。</p></div></div>
+<div class="grid"><div class="card"><h4>撮影するとき</h4><ol><li>作品全体が入るようにする</li><li>できるだけ真上から撮る</li><li>影が入らないようにする</li><li>ピントを合わせる</li><li>名前が確認できるようにする</li></ol></div>
+<div class="card"><h4>保存</h4><p>保存場所：＿＿＿＿＿＿＿＿</p><p>ファイル名例：<br><strong>2026_08_29_〇〇さん</strong></p><div class="notice">撮影しただけで終わりにせず、保存できているか確認してください。</div></div></div>
+</section>
+
+<section class="section" id="students">
+<div class="section-head"><div><h3>⑨ 生徒についての引き継ぎ</h3><p>否定的な評価ではなく、授業に役立つ情報を。</p></div></div>
+<div class="card">
+<div class="memo-grid"><div class="field"><label>生徒名</label><input placeholder="例：〇〇さん"></div><div class="field"><label>記入日・記入者</label><input placeholder="2026/08/29　〇〇先生"></div>
+<div class="field"><label>好きなこと・得意なこと</label><textarea></textarea></div><div class="field"><label>授業での様子</label><textarea></textarea></div>
+<div class="field"><label>声かけのポイント</label><textarea></textarea></div><div class="field"><label>苦手なこと・注意すること</label><textarea></textarea></div></div>
+</div>
+</section>
+
+<section class="section" id="parents">
+<div class="section-head"><div><h3>⑩ 保護者への対応</h3><p>明るく、簡潔に。分からないことは自己判断しない。</p></div></div>
+<div class="grid">
+<div class="card"><h4>よく使う言葉</h4><div class="quote">「こんにちは。お疲れさまです。」<br>「今日は〇〇を制作しました。」<br>「今日はここまで進みました。」<br>「こちらが今日の作品です。」</div></div>
+<div class="card"><h4>分からない質問をされたら</h4><div class="quote green">「確認してからお伝えします。」<br>「すみません、私では分からないので、確認いたします。」<br>「担当の先生に確認してみます。」</div></div>
+</div>
+<div class="notice"><strong>⚠️ 特に自己判断しないこと：</strong> 料金・契約・退会・授業方針・教室のルールなど。</div>
+</section>
+
+<section class="section" id="trouble">
+<div class="section-head"><div><h3>⑪ よくあるトラブル</h3><p>まず落ち着いて、教室のルールに従う。</p></div></div>
+<div class="grid three">
+<div class="card"><h4>生徒が遅れて来た</h4><p>通常どおり授業を進める。必要な場合は担当の先生に確認。</p></div>
+<div class="card"><h4>生徒が来ない</h4><p>出席状況を確認。自分の判断で保護者へ連絡せず、必要なら担当の先生へ。</p></div>
+<div class="card"><h4>生徒が泣いている</h4><p>落ち着かせ、無理に制作を続けさせない。状況を確認し、必要なら報告。</p></div>
+<div class="card"><h4>生徒同士のトラブル</h4><p>安全を確保し、それぞれの話を聞く。必要に応じて報告。</p></div>
+<div class="card"><h4>道具・材料を壊した</h4><p>状況を確認し、勝手に捨てたり修理したりせず報告。</p></div>
+<div class="card"><h4>材料が足りない</h4><p>在庫を確認。見つからなければ担当の先生に確認。</p></div>
+</div>
+</section>
+
+<section class="section" id="safety">
+<div class="section-head"><div><h3>⑫ ケガ・安全</h3><p>教室の正式な安全ルールを優先してください。</p></div></div>
+<div class="card"><h4>特に注意するもの</h4><p><span class="tag">はさみ</span><span class="tag">カッター</span><span class="tag">彫刻刀</span><span class="tag">グルーガン</span><span class="tag">接着剤</span><span class="tag">その他の制作道具</span></p>
+<div class="notice danger"><strong>ケガや事故が起きた場合</strong><br>まず安全を確保 → 落ち着いて対応 → 担当の先生へ報告 → 教室の決められた対応方法に従う。</div>
+<p>担当者：＿＿＿＿＿＿＿＿　　連絡先：＿＿＿＿＿＿＿＿</p></div>
+</section>
+
+<section class="section" id="cleanup">
+<div class="section-head"><div><h3>⑬ 掃除・片付け</h3><p>「次の先生がすぐ使える状態」に。</p></div></div>
+<div class="card"><div class="checklist"><label><input type="checkbox">机を拭いた</label><label><input type="checkbox">床を確認した</label><label><input type="checkbox">絵の具を片付けた</label><label><input type="checkbox">筆を洗った</label><label><input type="checkbox">水入れを洗った</label><label><input type="checkbox">パレットを洗った</label><label><input type="checkbox">ゴミを捨てた</label><label><input type="checkbox">材料を元の場所に戻した</label><label><input type="checkbox">作品を整理した</label></div></div>
+</section>
+
+<section class="section" id="where">
+<div class="section-head"><div><h3>⑭ これはどこ？</h3><p>よく聞かれるものを一覧に。</p></div></div>
+<div class="card"><div class="location-grid">
+<div class="location-item">画用紙 <span>＿＿＿＿</span></div><div class="location-item">絵の具 <span>＿＿＿＿</span></div><div class="location-item">筆 <span>＿＿＿＿</span></div><div class="location-item">水入れ <span>＿＿＿＿</span></div><div class="location-item">粘土 <span>＿＿＿＿</span></div><div class="location-item">はさみ <span>＿＿＿＿</span></div><div class="location-item">のり <span>＿＿＿＿</span></div><div class="location-item">テープ <span>＿＿＿＿</span></div><div class="location-item">雑巾 <span>＿＿＿＿</span></div><div class="location-item">完成作品 <span>＿＿＿＿</span></div><div class="location-item">未完成作品 <span>＿＿＿＿</span></div><div class="location-item">掃除用品 <span>＿＿＿＿</span></div>
+</div></div>
+</section>
+
+<section class="section" id="help">
+<div class="section-head"><div><h3>⑮ 困ったときは？</h3><p>迷ったら、この順番で確認。</p></div></div>
+<div class="card">
+<div class="flow"><div class="box">① 今日の授業を確認</div><span class="arrow">→</span><div class="box">② 授業準備を確認</div><span class="arrow">→</span><div class="box">③ 作品を確認</div><span class="arrow">→</span><div class="box">④ 教室を整理</div><span class="arrow">→</span><div class="box">⑤ 先生に確認</div></div>
+<div class="notice good"><strong>「分からないけど、何となくやっておこう」は避けましょう。</strong><br>特に作品・保護者対応・ケガ・お金に関することは、必ず確認してください。</div>
+</div>
+</section>
+
+<section class="section" id="memo">
+<div class="section-head"><div><h3>⑯ 引き継ぎメモ</h3><p>前の先生の経験を、次の先生へ。</p></div></div>
+<div class="card">
+<div class="memo-grid"><div class="field"><label>日付</label><input id="memoDate" type="date"></div><div class="field"><label>記入者</label><input placeholder="先生の名前"></div><div class="field"><label>生徒</label><input placeholder="〇〇さん"></div><div class="field"><label>授業</label><input placeholder="例：水彩・8月課題"></div><div class="field"><label>今日あったこと</label><textarea placeholder="授業中にあったこと、対応したことなど"></textarea></div><div class="field"><label>次回気をつけること</label><textarea placeholder="次の先生に伝えたいこと"></textarea></div></div>
+</div>
+</section>
+
+<section class="section" id="tips">
+<div class="section-head"><div><h3>⑰ 教室の知恵袋</h3><p>先生たちが見つけた「ちょっとしたコツ」を共有。</p></div></div>
+<div class="card">
+<div class="memo-grid"><div class="field"><label>授業のコツ</label><textarea></textarea></div><div class="field"><label>生徒への声かけ</label><textarea></textarea></div><div class="field"><label>材料・道具のコツ</label><textarea></textarea></div><div class="field"><label>失敗しやすいこと</label><textarea></textarea></div><div class="field"><label>新人先生へのアドバイス</label><textarea></textarea></div><div class="field"><label>その他</label><textarea></textarea></div></div>
+</div>
+</section>
+
+<div class="footer">新人先生のための教室ノート　｜　最終更新日：＿＿年＿＿月＿＿日</div>
+</main>
+
+<script>
+function toggleMenu(){document.getElementById('sidebar').classList.toggle('open')}
+document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open')));
+const search=document.getElementById('search');
+const sections=[...document.querySelectorAll('.section')];
+search.addEventListener('input',e=>{
+  const q=e.target.value.trim().toLowerCase();
+  sections.forEach(s=>{s.classList.toggle('hidden',q && !s.innerText.toLowerCase().includes(q));});
+});
+document.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+  cb.addEventListener('change',()=>{cb.closest('label').style.opacity=cb.checked?.55:1});
+});
+const memoDate=document.getElementById('memoDate');
+if(memoDate) memoDate.value=new Date().toISOString().slice(0,10);
+const links=[...document.querySelectorAll('.nav a')];
+const observer=new IntersectionObserver(entries=>{
+ entries.forEach(entry=>{
+  if(entry.isIntersecting){
+   links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+entry.target.id));
+  }
+ });
+},{rootMargin:'-20% 0px -65% 0px'});
+sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>
